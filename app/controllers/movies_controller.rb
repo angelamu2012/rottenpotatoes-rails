@@ -8,40 +8,40 @@ class MoviesController < ApplicationController
   end
 
   def index
-    if params[:ratings] == nil
-      @ratings_to_show = Movie.all_ratings
-      @movies = Movie.all
+    if params[:home] == nil
+      redirect_to movies_path(:ratings=> session[:ratings], :sortby=> session[:sortby], :home=> 1) 
     else
-      @movies = Movie.with_ratings(params[:ratings].keys)
-      @ratings_to_show = params[:ratings]
+      session[:ratings] = params[:ratings]
+      session[:sortby] = params[:sortby]
+      if session[:ratings] == nil
+        @ratings_to_show = Movie.all_ratings
+      else
+        @ratings_to_show = session[:ratings].keys
+      end
     end
 
-    @all_ratings = Movie.all_ratings
-    @hmapRatings = params[:ratings]
-    puts "HMAPRATINGS!!!!!!!!!!!!!!"
-    puts @hmapRatings
+    @all_ratings = Movie.all_ratings       
+    @hmapRatings = Hash[@ratings_to_show.collect {|v| [v, 1]}]
 
-    if params[:sortby] == "title"
-      @title_style = "hilite bg-warning"
-      if params[:ratings] == nil
-        @movies = Movie.all.order('title')
+    if session[:sortby] == nil
+      @movies = Movie.with_ratings(@ratings_to_show)
+    elsif session[:sortby] != nil
+      if session[:sortby] == "title"
+        @title_style = "hilite bg-warning"
+        @movies = Movie.with_ratings(@ratings_to_show).order('title')
       else
-        @movies = Movie.with_ratings(@hmapRatings.keys).order('title')
-      end
-    else
-      @title_style = ""
-    end   
+        @title_style = ""
+      end   
 
-    if params[:sortby] == "date"
-      @date_style = "hilite bg-warning"
-      if params[:ratings] == nil
-        @movies = Movie.all.order('release_date')
+      if session[:sortby] == "date"
+        @date_style = "hilite bg-warning"
+        @movies = Movie.with_ratings(@ratings_to_show).order('release_date')
       else
-        @movies = Movie.with_ratings(@hmapRatings.keys).order('release_date')
+        @date_style = ""
       end
-    else
-      @date_style = ""
+
     end
+
   end
 
   def new

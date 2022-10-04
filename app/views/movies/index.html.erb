@@ -6,14 +6,14 @@
 <table class="table table-striped col-md-12" id="movies">
   <thead>
     <tr>
-      <th class="<%= @title_style %>"><%= link_to "Movie Title", movies_path({:ratings=> @hmapRatings, :sortby=> "title"}) %></th>
+      <th class="<%= @title_style %>"><%= link_to "Movie Title", movies_path({:ratings=> @hmapRatings, :sortby=> "title", :home=>1}) %></th>
       <th>Rating</th>
-      <th class="<%= @date_style %>"><%= link_to "Release Date", movies_path({:ratings=> @hmapRatings, :sortby=> "date"}) %></th>
+      <th class="<%= @date_style %>"><%= link_to "Release Date", movies_path({:ratings=> @hmapRatings, :sortby=> "date", :home=>1}) %></th>
       <th>More Info</th>
     </tr>
   </thead>
   <tbody>
-    <%= form_tag movies_path, method: :get, id: 'ratings_form' do %>
+    <%= form_tag movies_path(:home, 1), method: :get, id: 'ratings_form' do %>
       Include:
       <% @all_ratings.each do |rating| %>
         <div class="form-check  form-check-inline">
@@ -21,7 +21,8 @@
           <%= check_box_tag "ratings[#{rating}]", "1",  @ratings_to_show.include?(rating), class: 'form-check-input' %>
         </div>
       <% end %>
-      <%= submit_tag 'Refresh', id: 'ratings_submit', class: 'btn btn-primary' %>
+      <%= hidden_field_tag(:home, '1') %>
+      <%= submit_tag 'Refresh', id: 'ratings_submit', class: 'btn btn-primary'%>
     <% end %>
     
     <% @movies.each do |movie| %>
